@@ -10,17 +10,19 @@ parameters_filename = [getenv('AEM_DIR_BAYES') filesep 'model' filesep 'glider_v
 n_samples = 1;
 
 % Duration of each sample / track
-sample_time = 510;
+sample_time = 100;
 
 % Random seed
-init_seed = 1;
+rng('shuffle')
+init_seed = rand*1000;
+
 
 % convert units
 %up_ft = 3500;
 %v_ft_s = 100;
 %dot_v_ft_ss = 1;
-%dot_psi_rad_s = 0.1;
 %dot_h_ft_s = 7;
+%dot_psi_rad_s = 0.1;
 %psi_rad = 3.141;
 
 v_knots = v_ft_s / 1.68780972222222;
@@ -150,13 +152,17 @@ mdl.start = start;
 lat0_deg = 42.29959;
 lon0_deg = -71.22220; % Exit 35C on I95, Massachusetts
 
-out_results_geo2000 = mdl.track(n_samples, sample_time, 'initialSeed', init_seed, 'coordSys', 'geodetic', ...
+out_results_geo2000 = mdl.track(n_samples, sample_time, 'initialSeed', init_seed, 'coordSys', 'neu', ...
                                 'lat0_deg', lat0_deg, 'lon0_deg', lon0_deg, ...
-                                'dofMaxRange_ft', 2000, 'isPlot', true);
+                                'dofMaxRange_ft', 2000, 'isPlot', false);
 
 %out_results_geo500 = mdl.track(n_samples, sample_time, 'initialSeed', init_seed, 'coordSys', 'geodetic', ...
 %                               'lat0_deg', lat0_deg, 'lon0_deg', lon0_deg, ...
 %                               'dofMaxRange_ft', 500, 'isPlot', true);
 
-writetimetable(out_results_geo2000{1,1}, '../../output/tracks/test_track.csv')
+date = [datetime('now')];
+datestring = datestr(date, 'dd_mmm_yyyy_HH_MM_SS_FFF');
+filename = append(datestring, '.csv');
+filepath = ['../../output/tracks/temp' filesep filename];
+writetimetable(out_results_geo2000{1,1}, filepath);
 end
