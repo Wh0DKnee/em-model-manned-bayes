@@ -13,6 +13,13 @@ classdef EncounterModel < handle
         % Graphical network
         G_initial(:, :) logical {mustBeNumericOrLogical, mustBeNonnegative, mustBeFinite}
         G_transition(:, :) logical {mustBeNumericOrLogical, mustBeNonnegative, mustBeFinite}
+
+        up_ft(1,1) double {mustBeReal}
+        v_knots(1,1) double {mustBeReal}
+        dot_v_knots_s(1,1) double {mustBeReal}
+        dot_h_ft_min(1,1) double {mustBeReal}
+        dot_psi_deg_s(1,1) double {mustBeReal}
+        psi_rad(1,1) double {mustBeReal}
     end
 
     properties (SetAccess = public, GetAccess = public)
@@ -49,6 +56,7 @@ classdef EncounterModel < handle
         start(:, 1) cell
 
         isAutoUpdate(1, 1) logical {mustBeNumericOrLogical}
+        is_custom_start(1,1) logical {mustBeNumericOrLogical}
     end
 
     properties (Dependent = true, GetAccess = public)
@@ -92,10 +100,24 @@ classdef EncounterModel < handle
             addParameter(p, 'cutpoints_initial', {});
             addParameter(p, 'bounds_initial', nan(0, 2));
             addParameter(p, 'zero_bins', {});
+            addParameter(p, 'is_custom_start', false);
+            addParameter(p, 'up_ft', -1);
+            addParameter(p, 'v_knots', -1);
+            addParameter(p, 'dot_v_knots_s', -1);
+            addParameter(p, 'dot_h_ft_min', -1);
+            addParameter(p, 'dot_psi_deg_s', -1);
+            addParameter(p, 'psi_rad', 0);
             parse(p, varargin{:});
 
             % Either load parameters from file or inputParser
             parameters_filename = p.Results.parameters_filename;
+            self.is_custom_start = p.Results.is_custom_start;
+            self.up_ft = p.Results.up_ft;
+            self.v_knots = p.Results.v_knots;
+            self.dot_v_knots_s = p.Results.dot_v_knots_s;
+            self.dot_h_ft_min = p.Results.dot_h_ft_min;
+            self.dot_psi_deg_s = p.Results.dot_psi_deg_s;
+            self.psi_rad = p.Results.psi_rad;
             if ~isempty(p.Results.parameters_filename)
                 idxZeroBoundaries = p.Results.idxZeroBoundaries;
                 isOverwriteZeroBoundaries = p.Results.isOverwriteZeroBoundaries;

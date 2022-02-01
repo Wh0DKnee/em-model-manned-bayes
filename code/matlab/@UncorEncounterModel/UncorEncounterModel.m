@@ -27,6 +27,12 @@ classdef UncorEncounterModel < EncounterModel
             addParameter(p, 'parameters_filename', [getenv('AEM_DIR_BAYES') filesep 'model' filesep 'uncor_1200only_fwse_v1p2.txt']);
             addParameter(p, 'idxZeroBoundaries', [1 2 3]);
             addParameter(p, 'isOverwriteZeroBoundaries', false);
+            addParameter(p, 'up_ft', -1);
+            addParameter(p, 'v_knots', -1);
+            addParameter(p, 'dot_v_knots_s', -1);
+            addParameter(p, 'dot_h_ft_min', -1);
+            addParameter(p, 'dot_psi_deg_s', -1);
+            addParameter(p, 'psi_rad', 0)
 
             % Parse
             parse(p, varargin{:});
@@ -35,10 +41,23 @@ classdef UncorEncounterModel < EncounterModel
             % We have to do this because in MATLAB, calls to superclass
             % constructors must be unconditional
             % https://www.mathworks.com/help/matlab/matlab_oop/class-constructor-methods.html
+            
             if ~strcmpi(p.Results.input_type, 'file')
                 parameters_filename = '';
             else
                 parameters_filename = p.Results.parameters_filename;
+            end
+            
+            up_ft = p.Results.up_ft;
+            v_knots = p.Results.v_knots;
+            dot_v_knots_s = p.Results.dot_v_knots_s;
+            dot_h_ft_min = p.Results.dot_h_ft_min;
+            dot_psi_deg_s = p.Results.dot_psi_deg_s;
+            psi_rad = p.Results.psi_rad;
+            if up_ft == -1
+                is_custom_start = false;
+            else
+                is_custom_start = true;
             end
 
             %
@@ -133,11 +152,11 @@ classdef UncorEncounterModel < EncounterModel
                     % Bounds / Cutpoints
                     bounds_initial = [0 0; 0 130; -1.25 1.25; -1250 1250; -17.5 17.5];
                     cutpoints_initial = {
-                                         [1200 3000 5000], ... % L
-                                         [15 30 45 60 75 90 105], ... % v
-                                         [-0.5 -0.15 0.15 0.5], ... % dv
-                                         [-750 -450 -150 150 450 750], ... % dh
-                                         [-12.5 -7.5 -2.5 2.5 7.5 12.5] ... % dpsi
+                                         [1200 3000 5000], ... % L in ft
+                                         [15 30 45 60 75 90 105], ... % v in knots
+                                         [-0.5 -0.15 0.15 0.5], ... % dv in knots/s
+                                         [-750 -450 -150 150 450 750], ... % dh in feet/min
+                                         [-12.5 -7.5 -2.5 2.5 7.5 12.5] ... % dpsi in degrees/s
                                         };
                     zero_bins = { [], [], 3, 4, 4 };
                     isOverwriteZeroBoundaries = false;
@@ -167,7 +186,14 @@ classdef UncorEncounterModel < EncounterModel
                                 'G_transition', G_transition, ...
                                 'cutpoints_initial', cutpoints_initial, ...
                                 'bounds_initial', bounds_initial, ...
-                                'zero_bins', zero_bins);
+                                'zero_bins', zero_bins, ...
+                                'is_custom_start', is_custom_start, ...
+                                'up_ft', up_ft, ...
+                                'v_knots', v_knots, ...
+                                'dot_v_knots_s', dot_v_knots_s, ...
+                                'dot_h_ft_min', dot_h_ft_min, ...
+                                'dot_psi_deg_s', dot_psi_deg_s, ...
+                                'psi_rad', psi_rad);
 
             % Specify if rotorcraft or not based on parameters_filename
             % This is used when setting the minimum allowable speed when
@@ -426,7 +452,7 @@ classdef UncorEncounterModel < EncounterModel
                     dpsi_rad_s = deg2rad(initial(idx_DPsi));  % psidot: deg/s -> rad/s
 
                     % Calculate heading, pitch and bank angles
-                    heading_rad = 0;
+                    heading_rad = self.psi_rad;
                     pitch_rad = asin(dh_ft_s / v_ft_s);
                     bank_rad = atan(v_ft_s * dpsi_rad_s / 32.2); % 32.2 = acceleration g
 

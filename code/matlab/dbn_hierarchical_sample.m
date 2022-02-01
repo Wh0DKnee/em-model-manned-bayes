@@ -22,11 +22,24 @@ function [initial, events] = dbn_hierarchical_sample(parms, dirichlet_initial, d
     events = resample_events(initial, events, resample_rates);
 
     % disp('Dediscretize')
-    for ii = 1:numel(initial)
-        if length(dediscretize_parameters{ii}) == (size(parms.N_initial{ii}, 1) - 2)
-
-        else
-            initial(ii) = dediscretize(initial(ii), dediscretize_parameters{ii}, zero_bins{ii});
+    if parms.is_custom_start
+        idxL = find(strcmp(parms.labels_initial, '"L"'));
+        idxV = find(strcmp(parms.labels_initial, '"v"'));
+        idxDV = find(strcmp(parms.labels_initial, '"\dot v"'));
+        idxDH = find(strcmp(parms.labels_initial, '"\dot h"'));
+        idxDPsi = find(strcmp(parms.labels_initial, '"\dot \psi"'));
+        initial(idxL) = parms.up_ft;
+        initial(idxV) = parms.v_knots;
+        initial(idxDV) = parms.dot_v_knots_s;
+        initial(idxDH) = parms.dot_h_ft_min;
+        initial(idxDPsi) = parms.dot_psi_deg_s;
+    else    
+        for ii = 1:numel(initial)
+            if length(dediscretize_parameters{ii}) == (size(parms.N_initial{ii}, 1) - 2)
+    
+            else
+                initial(ii) = dediscretize(initial(ii), dediscretize_parameters{ii}, zero_bins{ii});
+            end
         end
     end
 
