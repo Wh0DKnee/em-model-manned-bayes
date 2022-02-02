@@ -1,4 +1,4 @@
-function []=RUN_uncor_func(up_ft, v_ft_s, dot_v_ft_ss, dot_h_ft_s, dot_psi_rad_s, psi_rad)
+function []=RUN_uncor_func(north_ft, east_ft, up_ft, v_ft_s, dot_v_ft_ss, dot_h_ft_s, dot_psi_rad_s, psi_rad)
 
 % Copyright 2008 - 2021, MIT Lincoln Laboratory
 % SPDX-License-Identifier: BSD-2-Clause
@@ -34,7 +34,7 @@ dot_psi_deg_s = rad2deg(dot_psi_rad_s);
 %% Instantiate object
 mdl = UncorEncounterModel('parameters_filename', parameters_filename, 'up_ft', 10, 'v_knots', v_knots, ...
                             'dot_v_knots_s', dot_v_knots_s, 'dot_h_ft_min', dot_h_ft_min, 'dot_psi_deg_s', dot_psi_deg_s, ...
-                            'psi_rad', psi_rad);
+                            'psi_rad', psi_rad, 'north_ft', north_ft, 'east_ft', east_ft);
 
 idxL = find(strcmp(mdl.labels_initial, '"L"'));
 idxV = find(strcmp(mdl.labels_initial, '"v"'));
@@ -163,6 +163,6 @@ out_results_geo2000 = mdl.track(n_samples, sample_time, 'initialSeed', init_seed
 date = [datetime('now')];
 datestring = datestr(date, 'dd_mmm_yyyy_HH_MM_SS_FFF');
 filename = append(datestring, '.csv');
-filepath = ['../../output/tracks/temp' filesep filename];
+filepath = [getenv('AEM_DIR_BAYES') filesep 'output' filesep 'tracks' filesep 'temp' filesep filename];
 writetimetable(out_results_geo2000{1,1}, filepath);
 end

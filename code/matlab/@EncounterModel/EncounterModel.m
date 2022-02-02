@@ -20,6 +20,8 @@ classdef EncounterModel < handle
         dot_h_ft_min(1,1) double {mustBeReal}
         dot_psi_deg_s(1,1) double {mustBeReal}
         psi_rad(1,1) double {mustBeReal}
+        north_ft(1,1) double {mustBeReal}
+        east_ft(1,1) double {mustBeReal}
     end
 
     properties (SetAccess = public, GetAccess = public)
@@ -107,6 +109,8 @@ classdef EncounterModel < handle
             addParameter(p, 'dot_h_ft_min', -1);
             addParameter(p, 'dot_psi_deg_s', -1);
             addParameter(p, 'psi_rad', 0);
+            addParameter(p, 'north_ft', 0);
+            addParameter(p, 'east_ft', 0);
             parse(p, varargin{:});
 
             % Either load parameters from file or inputParser
@@ -118,6 +122,9 @@ classdef EncounterModel < handle
             self.dot_h_ft_min = p.Results.dot_h_ft_min;
             self.dot_psi_deg_s = p.Results.dot_psi_deg_s;
             self.psi_rad = p.Results.psi_rad;
+            self.north_ft = p.Results.north_ft;
+            self.east_ft = p.Results.east_ft;
+
             if ~isempty(p.Results.parameters_filename)
                 idxZeroBoundaries = p.Results.idxZeroBoundaries;
                 isOverwriteZeroBoundaries = p.Results.isOverwriteZeroBoundaries;

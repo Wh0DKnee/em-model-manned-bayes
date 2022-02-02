@@ -33,6 +33,8 @@ classdef UncorEncounterModel < EncounterModel
             addParameter(p, 'dot_h_ft_min', -1);
             addParameter(p, 'dot_psi_deg_s', -1);
             addParameter(p, 'psi_rad', 0)
+            addParameter(p, 'north_ft', 0);
+            addParameter(p, 'east_ft', 0);
 
             % Parse
             parse(p, varargin{:});
@@ -54,6 +56,8 @@ classdef UncorEncounterModel < EncounterModel
             dot_h_ft_min = p.Results.dot_h_ft_min;
             dot_psi_deg_s = p.Results.dot_psi_deg_s;
             psi_rad = p.Results.psi_rad;
+            north_ft = p.Results.north_ft;
+            east_ft = p.Results.east_ft;
             if up_ft == -1
                 is_custom_start = false;
             else
@@ -193,7 +197,9 @@ classdef UncorEncounterModel < EncounterModel
                                 'dot_v_knots_s', dot_v_knots_s, ...
                                 'dot_h_ft_min', dot_h_ft_min, ...
                                 'dot_psi_deg_s', dot_psi_deg_s, ...
-                                'psi_rad', psi_rad);
+                                'psi_rad', psi_rad, ...
+                                'north_ft', north_ft, ...
+                                'east_ft', east_ft);
 
             % Specify if rotorcraft or not based on parameters_filename
             % This is used when setting the minimum allowable speed when
@@ -391,8 +397,8 @@ classdef UncorEncounterModel < EncounterModel
 
             % Initial 2D position
             % Vertical axis set in for loop based on model sample
-            n_ft = 0;
-            e_ft = 0;
+            n_ft = self.north_ft;
+            e_ft = self.east_ft;
 
             % Model variable indicies
             idx_G = find(strcmp(self.labels_initial, '"G"'));
