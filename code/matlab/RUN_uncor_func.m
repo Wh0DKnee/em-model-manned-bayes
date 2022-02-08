@@ -1,5 +1,5 @@
-function []=RUN_uncor_func(north_ft, east_ft, up_ft, v_ft_s, dot_v_ft_ss, dot_h_ft_s, dot_psi_rad_s, psi_rad)
-
+function []=RUN_uncor_func(duration, north_ft, east_ft, up_ft, v_ft_s, dot_v_ft_ss, dot_h_ft_s, dot_psi_rad_s, psi_rad)
+%fprintf('duration %u, north_ft %f, east_ft %f, up_ft %f, v_ft_s %f, dot_v_ft_ss %f, dot_h_ft_s %f, dot_psi_rad_s %f, psi_rad%f\n', duration, north_ft, east_ft, up_ft, v_ft_s, dot_v_ft_ss, dot_h_ft_s, dot_psi_rad_s, psi_rad)
 % Copyright 2008 - 2021, MIT Lincoln Laboratory
 % SPDX-License-Identifier: BSD-2-Clause
 %% Inputs
@@ -10,7 +10,7 @@ parameters_filename = [getenv('AEM_DIR_BAYES') filesep 'model' filesep 'glider_v
 n_samples = 1;
 
 % Duration of each sample / track
-sample_time = 100;
+sample_time = double(duration);
 
 % Random seed
 rng('shuffle')
@@ -32,9 +32,9 @@ dot_psi_deg_s = rad2deg(dot_psi_rad_s);
 
 
 %% Instantiate object
-mdl = UncorEncounterModel('parameters_filename', parameters_filename, 'up_ft', 10, 'v_knots', v_knots, ...
-                            'dot_v_knots_s', dot_v_knots_s, 'dot_h_ft_min', dot_h_ft_min, 'dot_psi_deg_s', dot_psi_deg_s, ...
-                            'psi_rad', psi_rad, 'north_ft', north_ft, 'east_ft', east_ft);
+mdl = UncorEncounterModel('parameters_filename', parameters_filename, 'up_ft', double(up_ft), 'v_knots', double(v_knots), ...
+                            'dot_v_knots_s', double(dot_v_knots_s), 'dot_h_ft_min', double(dot_h_ft_min), 'dot_psi_deg_s', double(dot_psi_deg_s), ...
+                            'psi_rad', double(psi_rad), 'north_ft', double(north_ft), 'east_ft', double(east_ft));
 
 idxL = find(strcmp(mdl.labels_initial, '"L"'));
 idxV = find(strcmp(mdl.labels_initial, '"v"'));

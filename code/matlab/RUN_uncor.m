@@ -5,10 +5,10 @@
 parameters_filename = [getenv('AEM_DIR_BAYES') filesep 'model' filesep 'glider_v1p2.txt'];
 
 % Number of sample / tracks
-n_samples = 1;
+n_samples = 500;
 
 % Duration of each sample / track
-sample_time = 510;
+sample_time = 600;
 
 % Random seed
 init_seed = 1;
@@ -39,10 +39,14 @@ lon0_deg = -71.22220; % Exit 35C on I95, Massachusetts
 
 out_results_geo2000 = mdl.track(n_samples, sample_time, 'initialSeed', init_seed, 'coordSys', 'geodetic', ...
                                 'lat0_deg', lat0_deg, 'lon0_deg', lon0_deg, ...
-                                'dofMaxRange_ft', 2000, 'isPlot', true);
+                                'dofMaxRange_ft', 2000, 'isPlot', false);    
 
 %out_results_geo500 = mdl.track(n_samples, sample_time, 'initialSeed', init_seed, 'coordSys', 'geodetic', ...
 %                               'lat0_deg', lat0_deg, 'lon0_deg', lon0_deg, ...
 %                               'dofMaxRange_ft', 500, 'isPlot', true);
 
-writetimetable(out_results_geo2000{1,1}, '../../output/tracks/test_track.csv')
+for i = 1:n_samples
+    filename = int2str(i);
+    path = [getenv('AEM_DIR_BAYES') filesep 'output' filesep 'tracks' filesep filename];
+    writetimetable(out_results_geo2000{i,1}, path)
+end
