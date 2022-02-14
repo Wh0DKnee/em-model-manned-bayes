@@ -47,6 +47,7 @@ classdef EncounterModel < handle
         dirichlet_transition(:, 1) cell
 
         start(:, 1) cell
+        start_values(:, 1) cell
 
         isAutoUpdate(1, 1) logical {mustBeNumericOrLogical}
     end

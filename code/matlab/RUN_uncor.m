@@ -14,13 +14,13 @@ run(file_startup);
 
 %% Inputs
 % ASCII model parameter file
-parameters_filename = [getenv('AEM_DIR_BAYES') filesep 'model' filesep 'uncor_1200only_fwse_v1p2.txt'];
+parameters_filename = [getenv('AEM_DIR_BAYES') filesep 'model' filesep 'glider_v1.txt'];
 
 % Number of sample / tracks
 n_samples = 1;
 
 % Duration of each sample / track
-sample_time = 210;
+sample_time = 600;
 
 % Random seed
 init_seed = 1;
@@ -39,9 +39,9 @@ start = cell(mdl.n_initial, 1);
 % using an unconventional model (i.e. gliders) or the due regard model,
 % update or comment out accordingly. Also comment out if you don't want to
 % define a start distribution.
-start{1} = 1; % Geographic domain - CONUS (G = 1)
-start{2} = 4; % Airspace class - Other airspace (A = 4)
-start{3} = 2; % Altitude layer - [500, 1200) feet AGL (L = 2)
+%start{1} = 1; % Geographic domain - CONUS (G = 1)
+%start{2} = 4; % Airspace class - Other airspace (A = 4)
+%start{3} = 2; % Altitude layer - [500, 1200) feet AGL (L = 2)
 
 % Update the object with the start distribution
 mdl.start = start;
@@ -65,6 +65,11 @@ out_results_geo2000 = mdl.track(n_samples, sample_time, 'initialSeed', init_seed
                                 'dofMaxRange_ft', 2000, 'isPlot', true);
 
 % Geodetic track maintaining at least 500 feet laterally from a point obstacle
-out_results_geo500 = mdl.track(n_samples, sample_time, 'initialSeed', init_seed, 'coordSys', 'geodetic', ...
-                               'lat0_deg', lat0_deg, 'lon0_deg', lon0_deg, ...
-                               'dofMaxRange_ft', 500, 'isPlot', true);
+%out_results_geo500 = mdl.track(n_samples, sample_time, 'initialSeed', init_seed, 'coordSys', 'geodetic', ...
+%                               'lat0_deg', lat0_deg, 'lon0_deg', lon0_deg, ...
+%                               'dofMaxRange_ft', 500, 'isPlot', true);
+for i = 1:n_samples
+    filename = int2str(i);
+    path = [getenv('AEM_DIR_BAYES') filesep 'output' filesep 'tracks' filesep filename];
+    writetimetable(out_results_geo2000{i,1}, path)
+end

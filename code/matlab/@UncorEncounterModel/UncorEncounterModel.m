@@ -251,7 +251,7 @@ classdef UncorEncounterModel < EncounterModel
                     % dynamic Bayesian network. Variables are sampled discretely in bins and
                     % then dediscretized.
                     [initial, events] = dbn_hierarchical_sample(s, s.dirichlet_initial, s.dirichlet_transition, ...
-                                                                sample_time, s.boundaries, s.zero_bins, s.resample_rates, s.start);
+                                                                sample_time, s.boundaries, s.zero_bins, s.resample_rates, s.start, s.start_values);
 
                     % uniform draw for initial altitude within user-defined layer
                     % For nominal use cases, layers should not be defined.
@@ -377,8 +377,13 @@ classdef UncorEncounterModel < EncounterModel
             
             % Initial 2D position
             % Vertical axis set in for loop based on model sample
-            n_ft = 0;
-            e_ft = 0;
+            if ~isempty(self.start_values) && self.start_values{1}
+                n_ft = self.start_values{8};
+                e_ft = self.start_values{9};
+            else
+                n_ft = 0;
+                e_ft = 0;
+            end
 
             % Model variable indicies
             idx_G = find(strcmp(self.labels_initial, '"G"'));
@@ -438,7 +443,7 @@ classdef UncorEncounterModel < EncounterModel
                     dpsi_rad_s = deg2rad(initial(idx_DPsi));  % psidot: deg/s -> rad/s
 
                     % Calculate heading, pitch and bank angles
-                    heading_rad = 0;
+                    heading_rad = self.start_values{7};
                     pitch_rad = asin(dh_ft_s / v_ft_s);
                     bank_rad = atan(v_ft_s * dpsi_rad_s / 32.2); % 32.2 = acceleration g
 
@@ -468,6 +473,7 @@ classdef UncorEncounterModel < EncounterModel
                     else
                         is_good = true;
                     end
+                    is_good = true;
                 end
 
                 % Convert to timetable

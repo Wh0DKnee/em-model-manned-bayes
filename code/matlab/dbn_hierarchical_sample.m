@@ -1,4 +1,4 @@
-function [initial, events] = dbn_hierarchical_sample(parms, dirichlet_initial, dirichlet_transition, sample_time, dediscretize_parameters, zero_bins, resample_rates, start)
+function [initial, events] = dbn_hierarchical_sample(parms, dirichlet_initial, dirichlet_transition, sample_time, dediscretize_parameters, zero_bins, resample_rates, start, start_values)
     % Copyright 2008 - 2021, MIT Lincoln Laboratory
     % SPDX-License-Identifier: BSD-2-Clause
     % DBN_HIERARCHICAL_SAMPLE Calls dbn_sample() to generate samples from a
@@ -22,11 +22,24 @@ function [initial, events] = dbn_hierarchical_sample(parms, dirichlet_initial, d
     events = resample_events(initial, events, resample_rates);
 
     % disp('Dediscretize')
-    for ii = 1:numel(initial)
-        if length(dediscretize_parameters{ii}) == (size(parms.N_initial{ii}, 1) - 2)
-
-        else
-            initial(ii) = dediscretize(initial(ii), dediscretize_parameters{ii}, zero_bins{ii});
+    if ~isempty(start_values) && start_values{1}
+        idxL = find(strcmp(parms.labels_initial, '"L"'));
+        idxV = find(strcmp(parms.labels_initial, '"v"'));
+        idxDV = find(strcmp(parms.labels_initial, '"\dot v"'));
+        idxDH = find(strcmp(parms.labels_initial, '"\dot h"'));
+        idxDPsi = find(strcmp(parms.labels_initial, '"\dot \psi"'));
+        initial(idxL) = start_values{2};
+        initial(idxV) = start_values{3};
+        initial(idxDV) = start_values{4};
+        initial(idxDH) = start_values{5};
+        initial(idxDPsi) = start_values{6};
+    else
+        for ii = 1:numel(initial)
+            if length(dediscretize_parameters{ii}) == (size(parms.N_initial{ii}, 1) - 2)
+    
+            else
+                initial(ii) = dediscretize(initial(ii), dediscretize_parameters{ii}, zero_bins{ii});
+            end
         end
     end
 
