@@ -1,5 +1,5 @@
-function []=RUN_uncor_func(duration, north_ft, east_ft, up_ft, v_ft_s, dot_v_ft_ss, dot_h_ft_s, dot_psi_rad_s, psi_rad)
-fprintf('duration %u, north_ft %f, east_ft %f, up_ft %f, v_ft_s %f, dot_v_ft_ss %f, dot_h_ft_s %f, dot_psi_rad_s %f, psi_rad%f\n', duration, north_ft, east_ft, up_ft, v_ft_s, dot_v_ft_ss, dot_h_ft_s, dot_psi_rad_s, psi_rad)
+function []=RUN_uncor_func(iteration, duration, north_ft, east_ft, up_ft, v_ft_s, dot_v_ft_ss, dot_h_ft_s, dot_psi_rad_s, psi_rad)
+% fprintf('duration %u, north_ft %f, east_ft %f, up_ft %f, v_ft_s %f, dot_v_ft_ss %f, dot_h_ft_s %f, dot_psi_rad_s %f, psi_rad%f\n', duration, north_ft, east_ft, up_ft, v_ft_s, dot_v_ft_ss, dot_h_ft_s, dot_psi_rad_s, psi_rad)
 % Copyright 2008 - 2021, MIT Lincoln Laboratory
 % SPDX-License-Identifier: BSD-2-Clause
 %% Inputs
@@ -141,7 +141,8 @@ out_results_geo2000 = mdl.track(n_samples, sample_time, 'initialSeed', init_seed
 
 date = [datetime('now')];
 datestring = datestr(date, 'dd_mmm_yyyy_HH_MM_SS_FFF');
-filename = append(datestring, '.csv');
+filename = append(string(iteration), '.csv');
 filepath = [getenv('AEM_DIR_BAYES') filesep 'output' filesep 'tracks' filesep 'temp' filesep filename];
+filepath = strjoin(filepath, '');
 writetimetable(out_results_geo2000{1,1}, filepath);
 end
